@@ -1,12 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
-require('./db/database');
+const bodyParser = require("body-parser");
+
 const app = express();
 
 app.use(morgan('dev'));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(require('./routes/index'));
-/*app.use(require('./routes/user'));
-app.use(require('./routes/product'));
-app.use(require('./routes/track'));*/
 module.exports = app;

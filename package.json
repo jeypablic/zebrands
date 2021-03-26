@@ -1,17 +1,22 @@
 {
-  "name": "tarea",
-  "version": "1.0.0",
-  "description": "",
+  "name": "zebrans",
+  "version": "0.0.1",
+  "description": "Api para sistema de catálogo básico para administrar productos",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeypablic/zebrands.git"
+  },
   "scripts": {
     "start": "node src/index.js",
     "document": "apidoc -i src/ -o doc/",
     "dev": "node src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Juan Pablo Rodriguez",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mongoose": "^5.12.2",
     "morgan": "^1.10.0",

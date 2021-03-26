@@ -1,68 +1,20 @@
 const {Router} = require('express');
-const mongoose = require('mongoose');
-
-const pool = require('./../db/database');
-const ProductModel = require('./../models/productModel');
+const db = require('./../db/database');
+const userController = require('./../controller/userController');
+const productoController = require('./../controller/userController');
+const trackingController = require('./../controller/trackingController');
 
 const router = Router();
 
-/**
- * @api {get} / Inicio de la API
- * @apiName / 
- * @apiGroup Usuario 
- * 
- * 
- * @apiSuccess {String} Mensaje.
- */ 
 router.get('/', (req, res) => res.json({message: 'Hola Mundo'}));
+router.post('/usr/add', userController.crear);
+router.put('/usr/edit/:rut', userController.editar);
+router.delete('/usr/delete/:rut', userController.eliminar);
+router.get('/usr/find/:atr/:valor', userController.findBy);
 
-router.get('/test/:id/:nombre/:mark', (req, res) => {
-        
-    // a document instance
-    var book1 = new ProductModel({ 
-        sku: req.params.id, 
-        name:req.params.nombre, 
-        price: 10, mark: req.params.mark 
-    });
-
-    // save model to database
-    book1.save(function (err, book) {
-        if (err) return console.error(err);
-        console.log(book.name + " saved to bookstore collection.");
-        res.send(book);
-    });
-})
-
-/**
- * @api {get} / Inicio de la API
- * @apiName / 
- * @apiGroup Usuario 
- * 
- * 
- * @apiSuccess {String} Mensaje.
- */ 
- router.get('/product/add', (req, res) => {
-     res.json({message: 'Hola Mundo'});
- });
-
- /**
- * @api {get} / Inicio de la API
- * @apiName / 
- * @apiGroup Usuario 
- * 
- * 
- * @apiSuccess {String} Mensaje.
- */ 
-  router.get('/product/edit', (req, res) => res.json({message: 'Hola Mundo'}));
-
-  /**
- * @api {get} / Inicio de la API
- * @apiName / 
- * @apiGroup Usuario 
- * 
- * 
- * @apiSuccess {String} Mensaje.
- */ 
- router.get('/product/delete/:id', (req, res) => res.json({message: 'Hola Mundo'}));
+router.post('/product/add', productoController.crear);
+router.put('/product/edit/:sku', productoController.editar);
+router.delete('/product/delete/:sku', productoController.eliminar);
+router.get('/product/find/:atr/:valor', productoController.findBy);
 
 module.exports = router;
