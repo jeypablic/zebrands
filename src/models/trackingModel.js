@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 var model = mongoose.Schema({
-    name: {
+    nombre: {
         desc: "Nombre Acción.",
         trim: true,
         type: String,

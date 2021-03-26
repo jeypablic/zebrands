@@ -12,11 +12,7 @@ var model = mongoose.Schema({
     nombre: {
         desc: "Nombre del Producto",
         trim: true,
-        type: String
-    },
-    nombre: {
-        desc: "Nombre del Producto",
-        trim: true,
+        require: true,
         type: String
     },
     marca: {
@@ -25,6 +21,7 @@ var model = mongoose.Schema({
     },
     precio: {
         desc: "Precio del Producto",
+        require: true,
         type: Number
     }
 });

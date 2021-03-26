@@ -1,4 +1,4 @@
-const UserModel = require("../models/userModel");
+const ProductoModel = require("../models/productModel");
 
 /**
  * @api {post} /add Registrar un Usuario
@@ -19,30 +19,30 @@ const UserModel = require("../models/userModel");
 exports.crear = async (req, res) => {
 
     const model = req.body;
+    
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     try{
-        if (!model.rut && !model.nombre && !model.perfil) {
-            res.status(400).send({ message: "Debe completar todos los campos" });
-            return;
-        }
-        const docs = await UserModel.findOne({rut : model.rut}).exec();
+        const docs = await ProductoModel.findOne({sku : model.sku}).exec();
 
         if(!docs){
-            
-            UserModel.save(model).then(data => {
+            ProductoModel.save(model).then(data => {
                 res.send(data);
             }).catch(err => {
                 res.status(500).send({
-                    mensaje: err.message || "Error al ejecutar acción en la base de datos"
+                    mensaje: err.message || 'Error al intentar guardar el producto'
                 });
             });
         }else {
             res.send({
-                mensage : 'Usuario ya se encuentra registrado'
+                mensage : 'Producto ya se encuentra registrado'
             });
         }
     }catch(e){
         console.log(e);
-        res.status(500).send(e);
+        res.status(500).send(e.message);
     }
 }
 
@@ -65,20 +65,25 @@ exports.crear = async (req, res) => {
  exports.editar = async (req, res) => {
 
     const model = req.body;
+
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     try{
-        if (!model.rut) {
-            res.status(400).send({ message: "Debe completar el rut para actualizar" });
+        if (!req.params.sku) {
+            res.status(401).send({ message: "Debe completar el sku para poder editar" });
             return;
         }
 
-        const filtro = {rut : req.params.rut};
-        const user = await UserModel.findOneAndUpdate(filtro, model, {
+        const filtro = {sku : req.params.sku};
+        const producto = await ProductoModel.findOneAndUpdate(filtro, model, {
             new: true
         });
-        res.send(user);
+        res.send(producto);
     }catch(e){
         console.log(e);
-        res.status(500).send(e);
+        res.status(500).send(e.message);
     }
 }
 
@@ -99,15 +104,19 @@ exports.crear = async (req, res) => {
  *
  */
  exports.eliminar = (req, res) => {
-
+    
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     try{
-        if (!req.params.rut) {
-            res.status(400).send({ message: "Debe completar el rut para poder eliminar" });
+        if (!req.params.sku) {
+            res.status(401).send({ message: "Debe completar el sku para poder eliminar" });
             return;
         }
 
-        UserModel.findOneAndRemove({rut : req.params.rut})
-            .then(usr => res.send(usr.rut + ' Eliminado'))
+        ProductoModel.findOneAndRemove({sku : req.params.sku})
+            .then(prod => res.send(prod.sku + ' Eliminado'))
             .catch(err => res.json(err));
     }catch(e){
         console.log(e);
@@ -134,19 +143,29 @@ exports.crear = async (req, res) => {
 exports.findBy = async (req, res) => {
     
     let filtro = {};
-    filtro[req.params.atr] = 'perfil' === req.params.atr ? parseInt(req.params.valor) : req.params.valor;
+    filtro[req.params.atr] = 'precio' === req.params.atr ? parseInt(req.params.valor) : req.params.valor;
     
     try{
-        const docs = await UserModel.findOne(filtro).exec();
+        const docs = await ProductoModel.findOne(filtro).exec();
         if(docs){
             res.send(docs);
         }else {
             res.status(500).send({
-                message: err.message || "Usuario no encontrado."
+                message: err.message || "Proucto no encontrado."
             })
         }
     }catch(e){
         console.log(e);
-        res.status(500).send(e);
+        res.status(500).send(e.message);
+    }
+}
+
+exports.findAll = async (req, res) => {
+    try{
+        const productos = await ProductoModel.find({}).exec();
+        res.send(productos);
+    }catch(e){
+        console.log(e);
+        res.status(500).send(e.message);
     }
 }

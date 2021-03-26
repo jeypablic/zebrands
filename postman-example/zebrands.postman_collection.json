@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "c376c2d2-1a99-4a77-a0e6-fbdae3a2f880",
+		"name": "zebrands",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:5000/usr/find/perfil/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/usr/find/perfil/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usr",
+						"find",
+						"perfil",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/usr/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rut\" : \"17402009-4\",\r\n    \"nombre\" : \"Juan Pablo\",\r\n    \"aPaterno\" : \"Rodriguez\",\r\n    \"aMaterno\" : \"Yañez\",\r\n    \"perfil\" : 1,\r\n    \"email\" : \"jprodriguez@juanrodriguez.cl\",\r\n    \"password\" : \"test1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/usr/add",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usr",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/usr/edit",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"rut\" : \"17402009-4\",\r\n    \"nombre\" : \"Legolas Rodriguez\",\r\n    \"perfil\" : 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/usr/edit",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"usr",
+						"edit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/tracking/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\" : \"Consulta Producto\",\r\n    \"codigo\" : 100,\r\n    \"sku\" : \"12406\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/tracking/add",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"tracking",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"jprodriguez@juanrodriguez.cl\",\r\n    \"password\" : \"test1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

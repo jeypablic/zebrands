@@ -17,32 +17,26 @@ const UserModel = require("./../models/userModel");
  *
  */
 exports.crear = async (req, res) => {
-
     const model = req.body;
+    
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     try{
-        if (!model.rut && !model.nombre && !model.perfil) {
-            res.status(400).send({ message: "Debe completar todos los campos" });
-            return;
-        }
-        const docs = await UserModel.findOne({rut : model.rut}).exec();
-
-        if(!docs){
-            
-            UserModel.save(model).then(data => {
-                res.send(data);
-            }).catch(err => {
-                res.status(500).send({
-                    mensaje: err.message || "Error al ejecutar acción en la base de datos"
-                });
-            });
+        let user = await UserModel.findOne({rut : model.rut}).exec();
+        if(!user){
+            const user = new UserModel(model);
+            await user.save();
+            const token = await user.generateAuthToken()
+            res.status(201).send({ user, token })
         }else {
-            res.send({
-                mensage : 'Usuario ya se encuentra registrado'
-            });
+            res.status(500).send("Usuario ya se encuentra registrado.");
         }
+        
     }catch(e){
         console.log(e);
-        res.status(500).send(e);
+        res.status(500).send(e.message);
     }
 }
 
@@ -65,6 +59,11 @@ exports.crear = async (req, res) => {
  exports.editar = async (req, res) => {
 
     const model = req.body;
+    
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     try{
         if (!model.rut) {
             res.status(400).send({ message: "Debe completar el rut para actualizar" });
@@ -99,7 +98,9 @@ exports.crear = async (req, res) => {
  *
  */
  exports.eliminar = (req, res) => {
-
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
     try{
         if (!req.params.rut) {
             res.status(400).send({ message: "Debe completar el rut para poder eliminar" });
@@ -133,7 +134,12 @@ exports.crear = async (req, res) => {
  */
 exports.findBy = async (req, res) => {
     
+    if(req.user.perfil && req.user.perfil !== 1){
+        res.status(401).send({ message: 'No tiene autorización para ejecutar la acción'});    
+    }
+    
     let filtro = {};
+    
     filtro[req.params.atr] = 'perfil' === req.params.atr ? parseInt(req.params.valor) : req.params.valor;
     
     try{
@@ -148,5 +154,42 @@ exports.findBy = async (req, res) => {
     }catch(e){
         console.log(e);
         res.status(500).send(e);
+    }
+}
+
+exports.login = async (req, res) => {
+    console.log('login');
+    try {
+        const { email, password } = req.body
+        const user = await UserModel.findByCredentials(email, password)
+        if (!user) {
+           return res.status(401).send({error: 'Login failed! Check authentication credentials'})
+        }
+        const token = await user.generateAuthToken()
+        res.send({ user, token })
+     } catch (error) {
+        res.status(400).send(error)
+     }
+}
+
+exports.logout = async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token != req.token
+        })
+        await req.user.save()
+        res.send()
+    } catch (error) {
+        res.status(500).send(error)
+    }
+}
+
+exports.findAll = async (req, res) => {
+    try{
+        const usuarios = await UserModel.find({}).exec();
+        res.send(usuarios);
+    }catch(e){
+        console.log(e);
+        res.status(500).send(e.message);
     }
 }

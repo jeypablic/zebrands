@@ -10,17 +10,21 @@
   "scripts": {
     "start": "node src/index.js",
     "document": "apidoc -i src/ -o doc/",
-    "dev": "node src/index.js"
+    "dev": "node src/index.js",
+    "start-nodemon": "env-cmd -f ./.env nodemon src / app.js"
   },
   "keywords": [],
   "author": "Juan Pablo Rodriguez",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "bcryptjs": "^2.4.3",
+    "env-cmd": "^10.1.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.2",
     "morgan": "^1.10.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "@types/apidoc": "^0.22.2",
