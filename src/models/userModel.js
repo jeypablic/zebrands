@@ -58,14 +58,16 @@ var model = mongoose.Schema({
 });
 
 model.pre('save', async function (next) {
-    // Hash the password before saving the user model
     const user = this;
     if (user.isModified('password')) {
        user.password = await bcrypt.hash(user.password, 8);
     }
     next()
 });
- 
+
+/**
+ * Metodo encargado de generar los token de autorizacion para el usuario.
+ */
 model.methods.generateAuthToken = async function() {
     const user = this;
     const token = jwt.sign({_id: user._id}, process.env.JWT_KEY);
@@ -73,7 +75,14 @@ model.methods.generateAuthToken = async function() {
     await user.save();
     return token;
 }
- 
+
+/**
+ * Se encarga de buscar al usario por las credenciales de login
+ * 
+ * @param {*} email 
+ * @param {*} password 
+ * @returns 
+ */
 model.statics.findByCredentials = async (email, password) => {
     const user = await UserModel.findOne({email});
     console.log(user);

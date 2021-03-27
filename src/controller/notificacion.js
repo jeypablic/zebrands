@@ -18,7 +18,7 @@ function enviar(para, mensaje){
     const mailOptions = {
         from: 'prueba.jpry@gmail.com',
         to: para,
-        subject: 'Asunto Del Correo',
+        subject: 'Actualización de producto',
         text: mensaje
     };
 
