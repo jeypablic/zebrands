@@ -38,9 +38,13 @@ backend  | [nodemon] watching extensions: js,mjs,json
 backend  | [nodemon] starting `node src / app.js apidoc -o doc/`
 backend  | server iniciado
 backend  | DB conectada a  mongo
+backend  | Usuario administrador creado
+backend  | usr: test@gmail.com
+backend  | pass: adm1234
 ```
 
-Este mensaje nos indica que ya se encuentra disponible.
+Este mensaje nos indica que ya se encuentra disponible, y despliega los datos del primer usuario creado, que se necesitará para la interacción de la API
+
 En un navegador de preferencia, entre a la siguiente URL.
 
 ```
@@ -54,3 +58,11 @@ Para la ejecucion de cada API, se debe utilizar el software Postman e importar e
 ```
 ./postman-examples/zebrands.postman_collection.json
 ```
+
+Al cargar este archivo, Postman quedara configurado con cada una de las solicitudes a la API, con datos de pruebas.
+
+Para comenzar a utilizar la API desde el Postman, se debe ejecutar la api de login, con las credenciales entregadas en la consola del docker.
+
+Esto les respondera los datos del usuario y los token de acceso, uno de ello, se debe utilizar en la pestaña Authorizations, seleccinando el typo de autorización "Bearer Token", y pegar el token que se obtuvo en el login.
+
+Para la ejecución de todas las APIs de debe cargar el tocken.

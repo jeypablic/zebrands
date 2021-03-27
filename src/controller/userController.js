@@ -43,10 +43,10 @@ exports.crear = async (req, res) => {
     try{
         let user = await UserModel.findOne({rut : model.rut}).exec();
         if(!user){
-            const user = new UserModel(model);
+            user = new UserModel(model);
             await user.save();
-            const token = await user.generateAuthToken()
-            res.status(201).send({ user, token })
+            const token = await user.generateAuthToken();
+            res.status(201).send({ user, token });
         }else {
             res.status(500).send('Usuario ya se encuentra registrado.');
         }
@@ -230,7 +230,7 @@ exports.login = async (req, res) => {
         const { email, password } = req.body
         const user = await UserModel.findByCredentials(email, password)
         if (!user) {
-           return res.status(401).send({error: 'Login failed! Check authentication credentials'})
+           return res.status(401).send({error: 'Error Login!! Verifica tus credenciales'});
         }
         const token = await user.generateAuthToken()
         res.send({ user, token })
@@ -276,12 +276,18 @@ exports.logout = async (req, res) => {
  *      "password": "test1234"
  *   }
  * 
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *      "message" : "Todas las sesiones fueron eliminadas"
+ *   } 
+ * 
  **/
 exports.logoutAll = async (req, res) => {
     try {
         req.user.tokens.splice(0, req.user.tokens.length)
         await req.user.save()
-        res.send()
+        res.send({message : 'Todas las sesiones fueron eliminadas'})
      } catch (error) {
         res.status(500).send(error)
      }
