@@ -1,4 +1,4 @@
-const TrackingModel = require('../models/trackingModel');
+const TrackingModel = require('./../models/trackingModel');
 
 /**
  * @apiDefine Tracking Tracking
@@ -15,15 +15,22 @@ const TrackingModel = require('../models/trackingModel');
  *
  * @apiDescription Se encarga de registrar una accion ejecutada en el sistema.
  *
- * @apiQuery {String} name Nombre accion
- * @apiQuery {String} action Accion ejecutada
- * @apiQuery {Number} product Id del producto
- *
- * @apiSuccess {String} message Mensaje de la ejecución
+ * @apiParamExample {json} Request-Example:
+ *   {
+ *      "nombre" : "Consulta Producto",
+ *      "codigo": 100,
+ *      "sku" : 1
+ *   }
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *      "message" : "Registro guardado correctamente"
+ *   } 
  *
  */
  exports.tracking = (req, res) => {
-    var tracking = new TrackingModel({ 
+    const tracking = new TrackingModel({ 
         nombre: req.body.nombre, 
         codigo:req.body.codigo, 
         sku: req.body.sku
@@ -31,6 +38,6 @@ const TrackingModel = require('../models/trackingModel');
 
     tracking.save(function (err, item) {
         if (err) return console.error(err);
-        res.send({menssage : 'Tracking acction success'});
+        res.send({menssage : 'Registro guardado correctamente'});
     });
 }

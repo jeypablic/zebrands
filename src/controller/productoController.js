@@ -1,19 +1,37 @@
-const ProductoModel = require("../models/productModel");
+const UserModel = require('../models/userModel');
+const ProductoModel = require('./../models/productModel');
+const TrackingModel = require('./../models/trackingModel');
+
+const Notificacion = require('./notificacion');
 
 /**
- * @api {post} /add Registrar un Usuario
+ * @apiDefine Producto Producto
+ *
+ * API necesaria para gestionar los productos.
+ */
+
+/**
+ * @api {post} /add Registrar un Producto
+ * @apiPermission admin
  * @apiVersion 0.0.1
- * @apiName Usuario
- * @apiGroup Usuario
- * @apiPermission none
+ * @apiName Producto
+ * @apiGroup Producto 
  *
- * @apiDescription Se encarga de registrar un usuario del sistema.
+ * @apiDescription Se encarga de registrar un producto del sistema.
  *
- * @apiQuery {String} rut Rut del usuario
- * @apiQuery {String} nombre Nombre del usuario
- * @apiQuery {Number} perfil Perfil del usuario
+ * @apiParamExample {json} Request-Example:
+ *   {
+ *      "sku" : "1",
+ *      "nombre": "uno",
+ *      "marca" : "marca uno",
+ *      "precio" : 1000
+ *   }
  *
- * @apiSuccess {String} message Mensaje de la ejecución
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *      "message" : "Producto registrado correctamente"
+ *   } 
  *
  */
 exports.crear = async (req, res) => {
@@ -28,8 +46,11 @@ exports.crear = async (req, res) => {
         const docs = await ProductoModel.findOne({sku : model.sku}).exec();
 
         if(!docs){
-            ProductoModel.save(model).then(data => {
-                res.send(data);
+            const prod = new ProductoModel(model);
+            prod.save().then(data => {
+                res.send({
+                    mensage : 'Producto registrado correctamente'
+                });
             }).catch(err => {
                 res.status(500).send({
                     mensaje: err.message || 'Error al intentar guardar el producto'
@@ -47,19 +68,27 @@ exports.crear = async (req, res) => {
 }
 
 /**
- * @api {post} /edit Editar un Usuario
+ * @api {put} /edit/1 Editar un Producto
  * @apiVersion 0.0.1
- * @apiName Usuario
- * @apiGroup Usuario
- * @apiPermission none
+ * @apiName Producto
+ * @apiGroup Producto
+ * @apiPermission admin
  *
- * @apiDescription Se encarga de editar un usuario del sistema.
+ * @apiDescription Se encarga de editar un producto del sistema.
  *
- * @apiQuery {String} rut Rut del usuario
- * @apiQuery {String} nombre Nombre del usuario
- * @apiQuery {Number} perfil Perfil del usuario
- *
- * @apiSuccess {String} message Mensaje de la ejecución
+ * @apiParamExample {json} Request-Example:
+ *   {
+ *      "sku" : "1",
+ *      "nombre": "uno",
+ *      "marca" : "marca uno",
+ *      "precio" : 1000
+ *   }
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *      "message" : "Producto editado correctamente"
+ *   } 
  *
  */
  exports.editar = async (req, res) => {
@@ -71,16 +100,16 @@ exports.crear = async (req, res) => {
     }
     
     try{
-        if (!req.params.sku) {
-            res.status(401).send({ message: "Debe completar el sku para poder editar" });
-            return;
-        }
-
-        const filtro = {sku : req.params.sku};
-        const producto = await ProductoModel.findOneAndUpdate(filtro, model, {
+        delete model.sku;
+        const producto = await ProductoModel.findOneAndUpdate({sku : req.params.sku}, model, {
             new: true
         });
-        res.send(producto);
+        
+        const usrAdm = await UserModel.find({perfil:1,rut:{$ne : req.user.rut}}).exec();
+        usrAdm.forEach(u => {
+            Notificacion.enviar(u.email, 'Producto actualizado '+producto.sku);
+        });
+        res.send({message : 'Producto editado correctamente'});
     }catch(e){
         console.log(e);
         res.status(500).send(e.message);
@@ -88,19 +117,21 @@ exports.crear = async (req, res) => {
 }
 
 /**
- * @api {post} /add Registrar un Usuario
+ * @api {delete} /delete/1 Eliminar Producto
  * @apiVersion 0.0.1
- * @apiName Usuario
- * @apiGroup Usuario
- * @apiPermission none
+ * @apiName Producto
+ * @apiGroup Producto
+ * @apiPermission admin
  *
- * @apiDescription Se encarga de registrar un usuario del sistema.
+ * @apiDescription Se encarga de eliminar un producto del sistema.
  *
- * @apiQuery {String} rut Rut del usuario
- * @apiQuery {String} nombre Nombre del usuario
- * @apiQuery {Number} perfil Perfil del usuario
+ * @apiQuery {String} sku SKU del producto
  *
- * @apiSuccess {String} message Mensaje de la ejecución
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *      "message" : "Producto eliminado correctamente"
+ *   } 
  *
  */
  exports.eliminar = (req, res) => {
@@ -110,13 +141,8 @@ exports.crear = async (req, res) => {
     }
     
     try{
-        if (!req.params.sku) {
-            res.status(401).send({ message: "Debe completar el sku para poder eliminar" });
-            return;
-        }
-
         ProductoModel.findOneAndRemove({sku : req.params.sku})
-            .then(prod => res.send(prod.sku + ' Eliminado'))
+            .then(prod => res.send(prod.sku + ' Eliminado correctamente'))
             .catch(err => res.json(err));
     }catch(e){
         console.log(e);
@@ -125,19 +151,24 @@ exports.crear = async (req, res) => {
 }
 
 /**
- * @api {post} /findBy Busca un Usuario
+ * @api {get} /findBy/sku/1 Busca un Producto
  * @apiVersion 0.0.1
- * @apiName Usuario
- * @apiGroup Usuario
+ * @apiName Producto
+ * @apiGroup Producto
  * @apiPermission none
  *
- * @apiDescription Se encarga de buscar un usuario por algun parametro indicado
+ * @apiDescription Se encarga de buscar un producto por algun parametro indicado
  *
- * @apiQuery {String} rut Rut del usuario
- * @apiQuery {String} nombre Nombre del usuario
- * @apiQuery {Number} perfil Perfil del usuario
- *
- * @apiSuccess {String} message Mensaje de la ejecución
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "_id": "605e9d2dd0eaaa0033c68b41",
+ *        "sku": "2",
+ *        "nombre": "dos",
+ *        "marca": "marca Dos",
+ *        "precio": 2000,
+ *        "__v": 0
+ *     }
  *
  */
 exports.findBy = async (req, res) => {
@@ -148,10 +179,19 @@ exports.findBy = async (req, res) => {
     try{
         const docs = await ProductoModel.findOne(filtro).exec();
         if(docs){
+            if(req.user.perfil && req.user.perfil !== 1){
+                const tracking = new TrackingModel({ 
+                    nombre: 'Consulta Produto', 
+                    codigo: 100, 
+                    sku: docs.sku
+                });
+                tracking.save();
+            }
+            
             res.send(docs);
         }else {
             res.status(500).send({
-                message: err.message || "Proucto no encontrado."
+                message: 'Proucto no encontrado.'
             })
         }
     }catch(e){
@@ -160,9 +200,38 @@ exports.findBy = async (req, res) => {
     }
 }
 
+/**
+ * @api {post} /findAll Lista los Producto
+ * @apiVersion 0.0.1
+ * @apiName Producto
+ * @apiGroup Producto
+ * @apiPermission none
+ *
+ * @apiDescription Se encarga de listar todos los producto
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *      [{
+ *           "_id": "605e9d2dd0eaaa0033c68b41",
+ *           "sku": "2",
+ *           "nombre": "dos",
+ *           "marca": "marca Dos",
+ *           "precio": 2000,
+ *           "__v": 0
+ *       }, {
+ *           "_id": "605ea5a35bd2140033baa82c",
+ *           "sku": "1",
+ *           "nombre": "uno",
+ *           "marca": "marca uno",
+ *           "precio": 1000,
+ *           "__v": 0
+ *       }]
+ *
+ */
 exports.findAll = async (req, res) => {
     try{
         const productos = await ProductoModel.find({}).exec();
+        console.log(productos);
         res.send(productos);
     }catch(e){
         console.log(e);

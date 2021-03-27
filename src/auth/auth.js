@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken')
-const UserModel = require("./../models/userModel");
+const UserModel = require('./../models/userModel');
 
 const auth = async(req, res, next) => {
-    console.log('auth');
     if(req.header('Authorization')){
         const token = req.header('Authorization').replace('Bearer ', '');
         const data = jwt.verify(token, process.env.JWT_KEY);
@@ -18,8 +17,7 @@ const auth = async(req, res, next) => {
             res.status(401).send({ error: 'No tiene autorización para esta consulta' })
         }
     }else{
-        res.status(401).send({message: "Debe iniciar Sesión"});
+        res.status(401).send({message: 'Debe iniciar Sesión'});
     }
-
 }
-module.exports = auth
+module.exports = auth;

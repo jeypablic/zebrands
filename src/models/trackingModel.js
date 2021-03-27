@@ -4,10 +4,7 @@ var model = mongoose.Schema({
     nombre: {
         desc: "Nombre Acción.",
         trim: true,
-        type: String,
-        createIndexes: true,
-        unique: true,
-        required: true,
+        type: String
     },
     codigo: {
         desc: "Código Acción",
@@ -20,4 +17,5 @@ var model = mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('tracking', model);
+const trackingModel = mongoose.model('tracking', model);
+module.exports = trackingModel;

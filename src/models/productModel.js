@@ -17,7 +17,7 @@ var model = mongoose.Schema({
     },
     marca: {
         desc: "Marca del Producto",
-        type: Number
+        type: String
     },
     precio: {
         desc: "Precio del Producto",
@@ -27,4 +27,5 @@ var model = mongoose.Schema({
 });
 
 // compile schema to model
-module.exports = mongoose.model('producto', model);
+const ProductoModel =  mongoose.model('producto', model);
+module.exports =ProductoModel;

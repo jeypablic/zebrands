@@ -76,6 +76,7 @@ model.methods.generateAuthToken = async function() {
  
 model.statics.findByCredentials = async (email, password) => {
     const user = await UserModel.findOne({email});
+    console.log(user);
     if (!user) {
         throw new Error({ error: 'Credenciales Inválidas' });
     }
