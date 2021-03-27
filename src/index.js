@@ -15,11 +15,18 @@ async function main() {
         password : "adm1234" 
     };
     let user = await UserModel.findOne({rut : model.rut}).exec();
+    let token;
     if(!user){
         user = new UserModel(model);
         await user.save();
-        const token = await user.generateAuthToken();
+        token = await user.generateAuthToken();
+    }else{
+        user = await UserModel.findOneAndUpdate({rut : model.rut}, model, {
+            new: true
+        });
+        token = await user.generateAuthToken();
     }
+    
     console.log('Usuario administrador creado');
     console.log('usr:', model.email);
     console.log('pass:', model.password);
